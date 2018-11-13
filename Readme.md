@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Роман Кичатов](https://up.htmlacademy.ru/javascript/16/user/467439).
-* Наставник: `Неизвестно`.
+* Наставник: `Владимир Ульянов`.
 
 ---
 
