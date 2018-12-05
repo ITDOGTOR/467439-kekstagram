@@ -27,9 +27,9 @@ var getRandomOrderedArray = function (min, max) {
   var arr = [];
   for (var i = min; i <= max; i++) {
     arr.push(i);
-  };
+  }
 
-  function compareRandom(a, b) {
+  var compareRandom = function () {
     return Math.random() - 0.5;
   };
 
@@ -78,7 +78,7 @@ var photos = [];
 var randomArrUrl = getRandomOrderedArray(1, AUTHOR_NAME.length);
 for (var i = 0; i < AUTHOR_NAME.length; i++) {
   photos.push(generatePhoto(AUTHOR_NAME, PHOTOS_COMMENTS, randomArrUrl[i]));
-};
+}
 
 var similarListPhotos = document.querySelector('.pictures');
 var similarPhotoTemplate = document.querySelector('#picture').content.querySelector('.picture');
@@ -111,8 +111,8 @@ var similarCommentTemplate = document.querySelector('#social__comment').content.
 
 // Удаление комментариев из разметки
 var removeListComments = userPhoto.querySelectorAll('.social__comment');
-for (var i = removeListComments.length - 1; i >= 0; i--) {
-  similarListComments.removeChild(removeListComments[i]);
+for (var k = removeListComments.length - 1; k >= 0; k--) {
+  similarListComments.removeChild(removeListComments[k]);
 }
 
 // Отрисовка комментариев на странице
@@ -131,8 +131,8 @@ if (photos[0].comments.length > 5) {
   commentsRandomNumber = photos[0].comments.length;
 }
 
-for (var j = 0; j < commentsRandomNumber; j++) {
-  fragmentComment.appendChild(renderComment(photos[0].comments[j]));
+for (var n = 0; n < commentsRandomNumber; n++) {
+  fragmentComment.appendChild(renderComment(photos[0].comments[n]));
 }
 similarListComments.appendChild(fragmentComment);
 
