@@ -4,6 +4,7 @@ var MIN_LIKES = 15;
 var MAX_LIKES = 250;
 var MIN_COMMENTS = 1;
 var MAX_COMMENTS = 25;
+var ESC_KEYCODE = 27;
 var PHOTOS_COMMENTS = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -80,9 +81,10 @@ for (var i = 0; i < AUTHOR_NAME.length; i++) {
   photos.push(generatePhoto(AUTHOR_NAME, PHOTOS_COMMENTS, randomArrUrl[i]));
 }
 
+
+
 var similarListPhotos = document.querySelector('.pictures');
 var similarPhotoTemplate = document.querySelector('#picture').content.querySelector('.picture');
-
 // Отрисовка фотографий на странице
 var renderPhoto = function (photo) {
   var photoElement = similarPhotoTemplate.cloneNode(true);
@@ -91,53 +93,109 @@ var renderPhoto = function (photo) {
   photoElement.querySelector('.picture__comments').textContent = photo.comments.length;
   return photoElement;
 };
-
 var fragmentPhoto = document.createDocumentFragment();
 for (var j = 0; j < photos.length; j++) {
   fragmentPhoto.appendChild(renderPhoto(photos[j]));
 }
 similarListPhotos.appendChild(fragmentPhoto);
 
+
+
 var userPhoto = document.querySelector('.big-picture');
-userPhoto.classList.remove('hidden');
+var userPhotoClose = userPhoto.querySelector('.big-picture__cancel');
 
-userPhoto.querySelector('img').src = photos[0].url;
-userPhoto.querySelector('.likes-count').textContent = photos[0].likes;
-userPhoto.querySelector('.comments-count').textContent = photos[0].comments.length;
-userPhoto.querySelector('.social__caption').textContent = getRandomElement(PHOTOS_DESCRIPTION);
-
-var similarListComments = userPhoto.querySelector('.social__comments');
-var similarCommentTemplate = document.querySelector('#social__comment').content.querySelector('.social__comment');
-
-// Удаление комментариев из разметки
-var removeListComments = userPhoto.querySelectorAll('.social__comment');
-for (var k = removeListComments.length - 1; k >= 0; k--) {
-  similarListComments.removeChild(removeListComments[k]);
-}
-
-// Отрисовка комментариев на странице
-var renderComment = function (comment) {
-  var commentElement = similarCommentTemplate.cloneNode(true);
-  commentElement.querySelector('.social__picture').src = comment.avatar;
-  commentElement.querySelector('.social__text').textContent = comment.message;
-  return commentElement;
+var openUserPhoto = function () {
+  // userPhoto.classList.remove('hidden');
+  // getUserPhotoElement(0);
+  document.addEventListener('keydown', onUserPhotoEscPress);
 };
 
-var fragmentComment = document.createDocumentFragment();
+var closeUserPhoto = function () {
+  userPhoto.classList.add('hidden');
+  document.removeEventListener('keydown', onUserPhotoEscPress);
+};
 
-if (photos[0].comments.length > 5) {
-  var commentsRandomNumber = getRandomNumber(MIN_COMMENTS, 5);
-} else {
-  commentsRandomNumber = photos[0].comments.length;
+var onUserPhotoEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closeUserPhoto();
+  }
+};
+
+similarListPhotos.addEventListener('click', function () {
+  openUserPhoto();
+});
+
+userPhotoClose.addEventListener('click', function () {
+  closeUserPhoto();
+});
+
+function getUserPhotoElement (pictureIndex) {
+  var photoDescription = getRandomElement(PHOTOS_DESCRIPTION);
+  userPhoto.querySelector('img').src = photos[pictureIndex].url;
+  userPhoto.querySelector('.likes-count').textContent = photos[pictureIndex].likes;
+  userPhoto.querySelector('.comments-count').textContent = photos[pictureIndex].comments.length;
+  userPhoto.querySelector('.social__caption').textContent = photoDescription;
+
+  var similarListComments = userPhoto.querySelector('.social__comments');
+  var similarCommentTemplate = document.querySelector('#social__comment').content.querySelector('.social__comment');
+
+  // Удаление комментариев из разметки
+  var removeListComments = userPhoto.querySelectorAll('.social__comment');
+  for (var k = removeListComments.length - 1; k >= 0; k--) {
+    similarListComments.removeChild(removeListComments[k]);
+  }
+
+  // Отрисовка комментариев на странице
+  var renderComment = function (comment) {
+    var commentElement = similarCommentTemplate.cloneNode(true);
+    commentElement.querySelector('.social__picture').src = comment.avatar;
+    commentElement.querySelector('.social__text').textContent = comment.message;
+    return commentElement;
+  };
+
+  var fragmentComment = document.createDocumentFragment();
+  if (photos[pictureIndex].comments.length > 5) {
+    var commentsRandomNumber = getRandomNumber(MIN_COMMENTS, 5);
+  } else {
+    commentsRandomNumber = photos[pictureIndex].comments.length;
+  }
+
+  for (var n = 0; n < commentsRandomNumber; n++) {
+    fragmentComment.appendChild(renderComment(photos[pictureIndex].comments[n]));
+  }
+  similarListComments.appendChild(fragmentComment);
 }
 
-for (var n = 0; n < commentsRandomNumber; n++) {
-  fragmentComment.appendChild(renderComment(photos[0].comments[n]));
-}
-similarListComments.appendChild(fragmentComment);
-
-var commentCount = userPhoto.querySelector('.social__comment-count');
+/* var commentCount = userPhoto.querySelector('.social__comment-count');
 commentCount.classList.add('visually-hidden');
 var commentsLoad = userPhoto.querySelector('.social__comments-loader');
-commentsLoad.classList.add('visually-hidden');
+commentsLoad.classList.add('visually-hidden'); */
 
+var uploadPhoto = document.querySelector('.img-upload');
+var uploadPhotoControl = uploadPhoto.querySelector('#upload-file');
+var uploadPhotoForm = uploadPhoto.querySelector('.img-upload__overlay');
+var uploadPhotoFormClose = uploadPhoto.querySelector('.img-upload__cancel');
+
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+var openForm = function () {
+  uploadPhotoForm.classList.remove('hidden');
+  document.addEventListener('keydown', onPopupEscPress);
+};
+
+var closeForm = function () {
+  uploadPhotoForm.classList.add('hidden');
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+uploadPhotoControl.addEventListener('change', function () {
+  openForm();
+});
+
+uploadPhotoFormClose.addEventListener('click', function () {
+  closeForm();
+});
