@@ -4,6 +4,9 @@ var MIN_LIKES = 15;
 var MAX_LIKES = 250;
 var MIN_COMMENTS = 1;
 var MAX_COMMENTS = 25;
+var MIN_SCALE_VALUE = 25;
+var MAX_SCALE_VALUE = 100;
+var JUMP_SCALE_VALUE = 25;
 var ESC_KEYCODE = 27;
 var PHOTOS_COMMENTS = [
   'Всё отлично!',
@@ -168,36 +171,54 @@ var onUserPhotoEscPress = function (evt) {
   }
 };
 
-userPhotoClose.addEventListener('click', function () {
-  closeUserPhoto();
-});
+userPhotoClose.addEventListener('click', closeUserPhoto);
 
-/* var uploadPhoto = document.querySelector('.img-upload');
+var uploadPhoto = document.querySelector('.img-upload');
 var uploadPhotoControl = uploadPhoto.querySelector('#upload-file');
 var uploadPhotoForm = uploadPhoto.querySelector('.img-upload__overlay');
 var uploadPhotoFormClose = uploadPhoto.querySelector('.img-upload__cancel');
 
 var onPopupEscPress = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
-    closeForm();
+    closePhotoForm();
   }
 };
 
-var openForm = function () {
+var openPhotoForm = function () {
   uploadPhotoForm.classList.remove('hidden');
   document.addEventListener('keydown', onPopupEscPress);
 };
 
-var closeForm = function () {
+var closePhotoForm = function () {
   uploadPhotoForm.classList.add('hidden');
   document.removeEventListener('keydown', onPopupEscPress);
 };
 
-uploadPhotoControl.addEventListener('change', function () {
-  openForm();
+uploadPhotoControl.addEventListener('change', openPhotoForm);
+uploadPhotoFormClose.addEventListener('click', closePhotoForm);
+
+var imgUploadPhotoPreview = uploadPhoto.querySelector('.img-upload__preview');
+var scaleControlSmaller = uploadPhoto.querySelector('.scale__control--smaller');
+var scaleControlValue = uploadPhoto.querySelector('.scale__control--value');
+var scaleControlBigger = uploadPhoto.querySelector('.scale__control--bigger');
+
+var scaleValue = MAX_SCALE_VALUE;
+scaleControlValue.value = scaleValue + '%';
+
+scaleControlSmaller.addEventListener('click', function () {
+  scaleValue -= JUMP_SCALE_VALUE;
+  if (scaleValue <= MIN_SCALE_VALUE) {
+    scaleValue = MIN_SCALE_VALUE;
+  }
+  scaleControlValue.value = scaleValue + '%';
+  imgUploadPhotoPreview.style.transform = 'scale(' + scaleValue / 100 + ')';
 });
 
-uploadPhotoFormClose.addEventListener('click', function () {
-  closeForm();
-}); */
-
+scaleControlBigger.addEventListener('click', function () {
+  scaleValue += JUMP_SCALE_VALUE;
+  if (scaleValue >= MAX_SCALE_VALUE) {
+    scaleValue = MAX_SCALE_VALUE;
+  }
+  scaleControlValue.value = scaleValue + '%';
+  imgUploadPhotoPreview.style.transform = 'scale(' + scaleValue / 100 + ')';
+});
