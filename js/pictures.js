@@ -197,7 +197,8 @@ var closePhotoForm = function () {
 uploadPhotoControl.addEventListener('change', openPhotoForm);
 uploadPhotoFormClose.addEventListener('click', closePhotoForm);
 
-var imgUploadPhotoPreview = uploadPhoto.querySelector('.img-upload__preview');
+// Масштабирование картинки
+var imgUploadPhotoPreview = uploadPhoto.querySelector('img');
 var scaleControlSmaller = uploadPhoto.querySelector('.scale__control--smaller');
 var scaleControlValue = uploadPhoto.querySelector('.scale__control--value');
 var scaleControlBigger = uploadPhoto.querySelector('.scale__control--bigger');
@@ -221,4 +222,11 @@ scaleControlBigger.addEventListener('click', function () {
   }
   scaleControlValue.value = scaleValue + '%';
   imgUploadPhotoPreview.style.transform = 'scale(' + scaleValue / 100 + ')';
+});
+
+// Применение фильтра на картинку
+var uploadPhotoEffects = uploadPhoto.querySelector('.effects');
+var uploadPhotoPreviewContainer = uploadPhoto.querySelector('.img-upload__preview');
+uploadPhotoEffects.addEventListener('click', function (evt) {
+  uploadPhotoPreviewContainer.classList = 'img-upload__preview effects__preview--' + evt.target.value;
 });
