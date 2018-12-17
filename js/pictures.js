@@ -6,8 +6,48 @@ var MIN_COMMENTS = 1;
 var MAX_COMMENTS = 25;
 var MIN_SCALE_VALUE = 25;
 var MAX_SCALE_VALUE = 100;
-var JUMP_SCALE_VALUE = 25;
+var STEP_SCALE_VALUE = 25;
+var FILTER_DEFAULT_VALUE = 100;
 var ESC_KEYCODE = 27;
+var EFFECTS_NAME = ['chrome', 'sepia', 'marvin', 'phobos', 'heat', 'none'];
+var EFFECTS_LIST = {
+  chrome: {
+    filter: 'grayscale',
+    min: 0,
+    max: 1,
+    unit: ''
+  },
+  sepia: {
+    filter: 'sepia',
+    min: 0,
+    max: 1,
+    unit: ''
+  },
+  marvin: {
+    filter: 'invert',
+    min: 0,
+    max: 100,
+    unit: '%'
+  },
+  phobos: {
+    filter: 'blur',
+    min: 1,
+    max: 3,
+    unit: 'px'
+  },
+  heat: {
+    filter: 'brightness',
+    min: 1,
+    max: 3,
+    unit: ''
+  },
+  none: {
+    filter: '',
+    min: 1,
+    max: 1,
+    unit: ''
+  }
+};
 var PHOTOS_COMMENTS = [
   'Всё отлично!',
   'В целом всё неплохо. Но не всё.',
@@ -203,11 +243,11 @@ var scaleControlSmaller = uploadPhoto.querySelector('.scale__control--smaller');
 var scaleControlValue = uploadPhoto.querySelector('.scale__control--value');
 var scaleControlBigger = uploadPhoto.querySelector('.scale__control--bigger');
 
-var scaleValue = MAX_SCALE_VALUE;
+var scaleValue = MAX_SCALE_VALUE; // По умолчанию значение элемента равно 100
 scaleControlValue.value = scaleValue + '%';
 
 scaleControlSmaller.addEventListener('click', function () {
-  scaleValue -= JUMP_SCALE_VALUE;
+  scaleValue -= STEP_SCALE_VALUE;
   if (scaleValue <= MIN_SCALE_VALUE) {
     scaleValue = MIN_SCALE_VALUE;
   }
@@ -216,7 +256,7 @@ scaleControlSmaller.addEventListener('click', function () {
 });
 
 scaleControlBigger.addEventListener('click', function () {
-  scaleValue += JUMP_SCALE_VALUE;
+  scaleValue += STEP_SCALE_VALUE;
   if (scaleValue >= MAX_SCALE_VALUE) {
     scaleValue = MAX_SCALE_VALUE;
   }
@@ -224,9 +264,63 @@ scaleControlBigger.addEventListener('click', function () {
   imgUploadPhotoPreview.style.transform = 'scale(' + scaleValue / 100 + ')';
 });
 
+// Возвращает пропорцию
+var getProportion = function (min, max, bool) {
+  return bool ? ((max - min) / 100) : (100 / (max - min));
+};
+
+// Возвращает значение заданного фильтра строкой
+var getFilter = function (filter, value, unit) {
+  return filter ? filter + '(' + value + unit + ')' : '';
+};
+
+// Устанавливает класс эффекта на элементе
+var setClassEffect = function (effect) {
+  for (var z = 0; z < EFFECTS_NAME.length; z++) {
+    imgUploadPhotoPreview.classList.remove('effects__preview--' + EFFECTS_NAME[z]);
+    if (effect === EFFECTS_NAME[z]) {
+      imgUploadPhotoPreview.classList.add('effects__preview--' + effect);
+    }
+  }
+};
+
+// Устанавливает значение эффекта на элементе
+var setValueEffect = function (effect, value) {
+  var filter = EFFECTS_LIST[effect];
+  var proportion = getProportion(filter.min, filter.max, 1);
+  var undoProportion = getProportion(filter.min, filter.max, 0);
+  var valueFilter = Math.max(filter.min, Math.min(proportion * value + filter.min, filter.max));
+  imgUploadPhotoPreview.style.filter = getFilter(filter.filter, valueFilter, filter.unit);
+  effectValue.value = Math.round((valueFilter - filter.min) * undoProportion);
+};
+
+// Изменяет значение фильтра с помощью слайдера
+var setValueEffectSlider = function () {
+  var elementEffect = imgUploadPhotoPreview.getAttribute('class');
+  var effect = elementEffect.substring(elementEffect.lastIndexOf('--') + 2, elementEffect.length);
+  var newEffectLevel = 20;
+  setValueEffect(effect, newEffectLevel);
+};
+
+var slider = uploadPhoto.querySelector('.img-upload__effect-level');
+var imgPhotoEffects = uploadPhoto.querySelectorAll('.effects__radio');
+var effectValue = uploadPhoto.querySelector('.effect-level__value');
+
+slider.classList.add('hidden'); // По умолчанию слайдер скрыт
+
 // Применение фильтра на картинку
-var uploadPhotoEffects = uploadPhoto.querySelector('.effects');
-var uploadPhotoPreviewContainer = uploadPhoto.querySelector('.img-upload__preview');
-uploadPhotoEffects.addEventListener('click', function (evt) {
-  uploadPhotoPreviewContainer.classList = 'img-upload__preview effects__preview--' + evt.target.value;
+imgPhotoEffects.forEach(function (element) {
+  element.addEventListener('click', function () {
+    var effect = element.getAttribute('value');
+    setClassEffect(effect);
+    setValueEffect(effect, FILTER_DEFAULT_VALUE);
+    if (effect !== EFFECTS_NAME[EFFECTS_NAME.length - 1]) {
+      slider.classList.remove('hidden');
+    } else {
+      slider.classList.add('hidden');
+    }
+  });
 });
+
+slider.addEventListener('mouseup', setValueEffectSlider);
+
