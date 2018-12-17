@@ -324,3 +324,94 @@ imgPhotoEffects.forEach(function (element) {
 
 slider.addEventListener('mouseup', setValueEffectSlider);
 
+// Валидация хэш-тегов
+var windowHashtags = uploadPhoto.querySelector('.text__hashtags');
+
+var validityInputHashtags = function (evt) {
+  var countHashtag = 0;
+  var hashtags = evt.target.value.split(' ');
+  var lengthHashtagTooShort = false;
+  var lengthHashtagTooLong = false;
+  var notSymbolHashtag = false;
+  var notSpaceHashtag = false;
+  var repeatHashtags = false;
+
+  for (var w = 0; w < hashtags.length; w++) {
+    hashtags[w].toLowerCase();
+    if (hashtags[w].length < 2) {
+      lengthHashtagTooShort = true;
+    } else if (hashtags[w].length > 20) {
+      lengthHashtagTooLong = true;
+    } else {
+      for (var j = 0; j < hashtags[w].length; j++) {
+        var symbols = hashtags[w];
+        if (symbols[0] !== '#') {
+          notSymbolHashtag = true;
+        }
+        if (symbols[j] === '#') {
+          countHashtag++;
+          if (countHashtag >= 2) {
+            notSpaceHashtag = true;
+          }
+        }
+      }
+      countHashtag = 0;
+    }
+  }
+
+  for (var k = 0; k < hashtags.length - 1; k++) {
+    for (var m = k + 1; m < hashtags.length; m++) {
+      if (hashtags[m] === hashtags[k]) {
+        repeatHashtags = true;
+      }
+    }
+  }
+
+  if (hashtags.length > 5) {
+    evt.target.setCustomValidity('Введено больше 5 хэш-тегов');
+  } else if (lengthHashtagTooShort) {
+    evt.target.setCustomValidity('Хэш-тег должен иметь не менее 2 символов');
+  } else if (lengthHashtagTooLong) {
+    evt.target.setCustomValidity('Хэш-тег должен иметь не более 20 символов');
+  } else if (notSymbolHashtag) {
+    evt.target.setCustomValidity('В названии хэш-тега должен присутствовать символ #');
+  } else if (repeatHashtags) {
+    evt.target.setCustomValidity('Хэш-теги не должны повторяться');
+  } else if (notSpaceHashtag) {
+    evt.target.setCustomValidity('Хэш-теги должны отделяться пробелами');
+  } else {
+    evt.target.setCustomValidity('');
+  }
+};
+
+windowHashtags.addEventListener('input', validityInputHashtags);
+
+// Валидация комментария
+var windowDescription = uploadPhoto.querySelector('.text__description');
+
+var validityInputDescription = function (evt) {
+  if (windowDescription.value.length > 140) {
+    evt.target.setCustomValidity('Длина комментария не должна быть больше 140 символов');
+  } else {
+    evt.target.setCustomValidity('');
+  }
+};
+
+windowDescription.addEventListener('input', validityInputDescription);
+
+// Временное решение
+windowHashtags.addEventListener('focus', function () {
+  document.removeEventListener('keydown', onPopupEscPress);
+});
+
+windowHashtags.addEventListener('blur', function () {
+  document.addEventListener('keydown', onPopupEscPress);
+});
+
+windowDescription.addEventListener('focus', function () {
+  document.removeEventListener('keydown', onPopupEscPress);
+});
+
+windowDescription.addEventListener('blur', function () {
+  document.addEventListener('keydown', onPopupEscPress);
+});
