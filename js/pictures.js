@@ -135,12 +135,6 @@ var getUserPhotoElement = function (pictureIndex) {
   var similarListComments = userPhoto.querySelector('.social__comments');
   var similarCommentTemplate = document.querySelector('#social__comment').content.querySelector('.social__comment');
 
-  // Удаление комментариев из разметки
-  var removeListComments = userPhoto.querySelectorAll('.social__comment');
-  for (var k = removeListComments.length - 1; k >= 0; k--) {
-    similarListComments.removeChild(removeListComments[k]);
-  }
-
   // Отрисовка комментариев на странице
   var renderComment = function (comment) {
     var commentElement = similarCommentTemplate.cloneNode(true);
