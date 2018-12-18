@@ -275,6 +275,11 @@ var getFilter = function (filter, value, unit) {
   return filter ? filter + '(' + value + unit + ')' : '';
 };
 
+// Возвращает значение перемещения пина слайдера
+var getPinPercent = function (newValue, min, max) {
+  return Math.round((Math.min(Math.max(newValue - min, 0), newValue + min) / max) * 100);
+};
+
 // Устанавливает класс эффекта на элементе
 var setClassEffect = function (effect) {
   for (var z = 0; z < EFFECTS_NAME.length; z++) {
@@ -287,25 +292,34 @@ var setClassEffect = function (effect) {
 
 // Устанавливает значение эффекта на элементе
 var setValueEffect = function (effect, value) {
+  var effectValue = uploadPhoto.querySelector('.effect-level__value');
+  var levelPin = uploadPhoto.querySelector('.effect-level__pin');
+  var levelDepth = uploadPhoto.querySelector('.effect-level__depth');
+
   var filter = EFFECTS_LIST[effect];
   var proportion = getProportion(filter.min, filter.max, 1);
   var undoProportion = getProportion(filter.min, filter.max, 0);
+
   var valueFilter = Math.max(filter.min, Math.min(proportion * value + filter.min, filter.max));
+  var valueFilterInPercent = Math.round((valueFilter - filter.min) * undoProportion);
+
   imgUploadPhotoPreview.style.filter = getFilter(filter.filter, valueFilter, filter.unit);
-  effectValue.value = Math.round((valueFilter - filter.min) * undoProportion);
+  effectValue.setAttribute('value', valueFilterInPercent);
+
+  levelPin.style.left = valueFilterInPercent + '%';
+  levelDepth.style.width = valueFilterInPercent + '%';
 };
 
 // Изменяет значение фильтра с помощью слайдера
-var setValueEffectSlider = function () {
+var setValueEffectSlider = function (value) {
   var elementEffect = imgUploadPhotoPreview.getAttribute('class');
   var effect = elementEffect.substring(elementEffect.lastIndexOf('--') + 2, elementEffect.length);
-  var newEffectLevel = 20;
-  setValueEffect(effect, newEffectLevel);
+
+  setValueEffect(effect, value);
 };
 
 var slider = uploadPhoto.querySelector('.img-upload__effect-level');
 var imgPhotoEffects = uploadPhoto.querySelectorAll('.effects__radio');
-var effectValue = uploadPhoto.querySelector('.effect-level__value');
 
 slider.classList.add('hidden'); // По умолчанию слайдер скрыт
 
@@ -323,7 +337,48 @@ imgPhotoEffects.forEach(function (element) {
   });
 });
 
-slider.addEventListener('mouseup', setValueEffectSlider);
+var onMouseClick = function (clickEvt) {
+  clickEvt.preventDefault();
+
+  var effectLine = clickEvt.currentTarget.querySelector('.effect-level__line');
+  var effectLineCoords = effectLine.getBoundingClientRect();
+
+  var pinValue = getPinPercent(clickEvt.clientX, effectLineCoords.x, effectLineCoords.width);
+
+  setValueEffectSlider(pinValue);
+
+  document.removeEventListener('click', onMouseClick);
+};
+
+var onMouseDown = function (downEvt) {
+  downEvt.preventDefault();
+
+  var effectLine = downEvt.currentTarget.querySelector('.effect-level__line');
+  var effectLineCoords = effectLine.getBoundingClientRect();
+
+  var pinValue = getPinPercent(downEvt.clientX, effectLineCoords.x, effectLineCoords.width);
+
+  var onMouseMove = function (moveEvt) {
+    moveEvt.preventDefault();
+
+    pinValue = getPinPercent(moveEvt.clientX, effectLineCoords.x, effectLineCoords.width);
+
+    setValueEffectSlider(pinValue);
+  };
+
+  var onMouseUp = function (upEvt) {
+    upEvt.preventDefault();
+
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  };
+
+  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener('mouseup', onMouseUp);
+};
+
+slider.addEventListener('mousedown', onMouseDown);
+slider.addEventListener('click', onMouseClick);
 
 // Валидация хэш-тегов
 var windowHashtags = uploadPhoto.querySelector('.text__hashtags');
