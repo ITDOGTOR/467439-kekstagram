@@ -238,14 +238,14 @@ var scaleControlValue = uploadPhoto.querySelector('.scale__control--value');
 var scaleControlBigger = uploadPhoto.querySelector('.scale__control--bigger');
 
 var scaleValue = MAX_SCALE_VALUE; // По умолчанию значение элемента равно 100
-scaleControlValue.value = scaleValue + '%';
+scaleControlValue.setAttribute('value', scaleValue + '%');
 
 scaleControlSmaller.addEventListener('click', function () {
   scaleValue -= STEP_SCALE_VALUE;
   if (scaleValue <= MIN_SCALE_VALUE) {
     scaleValue = MIN_SCALE_VALUE;
   }
-  scaleControlValue.value = scaleValue + '%';
+  scaleControlValue.setAttribute('value', scaleValue + '%');
   imgUploadPhotoPreview.style.transform = 'scale(' + scaleValue / 100 + ')';
 });
 
@@ -254,7 +254,7 @@ scaleControlBigger.addEventListener('click', function () {
   if (scaleValue >= MAX_SCALE_VALUE) {
     scaleValue = MAX_SCALE_VALUE;
   }
-  scaleControlValue.value = scaleValue + '%';
+  scaleControlValue.setAttribute('value', scaleValue + '%');
   imgUploadPhotoPreview.style.transform = 'scale(' + scaleValue / 100 + ')';
 });
 
@@ -355,7 +355,7 @@ var validityInputHashtags = function (evt) {
 
   for (var k = 0; k < hashtags.length - 1; k++) {
     for (var m = k + 1; m < hashtags.length; m++) {
-      if (hashtags[m] === hashtags[k]) {
+      if (hashtags[m].toLowerCase() === hashtags[k].toLowerCase()) {
         repeatHashtags = true;
       }
     }
