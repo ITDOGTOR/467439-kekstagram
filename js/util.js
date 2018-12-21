@@ -15,5 +15,9 @@
         action();
       }
     },
+    // Возвращает случайное число в заданном диапазоне не включая max
+    getRandomNumber: function (min, max) {
+      return Math.floor(Math.random() * (max - min)) + min;
+    }
   };
 })();

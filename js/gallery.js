@@ -3,25 +3,29 @@
 (function () {
   var onLoad = function (arrayOfObject) {
     var userPhoto = document.querySelector('.big-picture');
+    var similarListPhotos = document.querySelector('.pictures');
+    var similarPhotoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
     // Отрисовка миниатюр на странице
-    var renderPhotos = function (photo) {
-      var similarListPhotos = document.querySelector('.pictures');
-      var similarPhotoTemplate = document.querySelector('#picture').content.querySelector('.picture');
+    var renderPhoto = function (photo) {
+      var photoElement = similarPhotoTemplate.cloneNode(true);
+
+      photoElement.querySelector('.picture__img').src = photo.url;
+      photoElement.querySelector('.picture__likes').textContent = photo.likes;
+      photoElement.querySelector('.picture__comments').textContent = photo.comments.length;
+
+      return photoElement;
+    };
+
+    var fillPagePhotos = function (photo) {
       var fragmentPhoto = document.createDocumentFragment();
-
       for (var i = 0; i < photo.length; i++) {
-        var photoElement = similarPhotoTemplate.cloneNode(true);
-
-        photoElement.setAttribute('data-picture-index', i);
-        photoElement.querySelector('.picture__img').src = photo[i].url;
-        photoElement.querySelector('.picture__likes').textContent = photo[i].likes;
-        photoElement.querySelector('.picture__comments').textContent = photo[i].comments.length;
-        fragmentPhoto.appendChild(photoElement);
+        fragmentPhoto.appendChild(renderPhoto(photo[i]));
       }
       similarListPhotos.appendChild(fragmentPhoto);
     };
-    renderPhotos(arrayOfObject);
+
+    fillPagePhotos(arrayOfObject);
 
     // Возвращает увеличенную миниатюру со всеми данными
     var getUserPhotoElement = function (pictureIndex) {
@@ -57,16 +61,31 @@
     };
 
     var userPhotoClose = userPhoto.querySelector('.big-picture__cancel');
-    var photoList = document.querySelectorAll('.picture');
 
     // Навешивание обработчика
-    photoList.forEach(function (element) {
-      element.addEventListener('click', function (evt) {
+    var addClickHandler = function (photo, pictureIndex) {
+      photo.addEventListener('click', function (evt) {
         evt.preventDefault();
-        getUserPhotoElement(evt.currentTarget.dataset['pictureIndex']);
+        getUserPhotoElement(pictureIndex);
         openUserPhoto();
       });
-    });
+    };
+
+    var addHandlerToAllPhotos = function () {
+      var photoList = document.querySelectorAll('.picture > img');
+      for (var i = 0; i < photoList.length; i++) {
+        var pictureIndex = photoList[i].src.slice(-6); // индекс фото берем из его адреса
+        pictureIndex = pictureIndex.slice(0, -4);
+        if (pictureIndex > 9) {
+          parseInt(pictureIndex, 10);
+        } else {
+          pictureIndex = pictureIndex.slice(-1);
+        }
+        parseInt(pictureIndex, 10);
+        addClickHandler(photoList[i], pictureIndex - 1);
+      }
+    };
+    addHandlerToAllPhotos();
 
     var onUserPhotoEscPress = function (evt) {
       window.util.isEscEvent(evt, closeUserPhoto);
@@ -86,6 +105,12 @@
     };
 
     userPhotoClose.addEventListener('click', closeUserPhoto);
+
+    window.arrayOfObject = arrayOfObject;
+    window.gallery = {
+      addHandlerToAllPhotos: addHandlerToAllPhotos,
+      fillPagePhotos: fillPagePhotos
+    };
   };
 
   var onError = function () {
