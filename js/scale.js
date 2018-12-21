@@ -34,6 +34,7 @@
   });
 
   window.scale = {
-    imgUploadPhotoPreview: imgUploadPhotoPreview
+    imgUploadPhotoPreview: imgUploadPhotoPreview,
+    MAX_SCALE_VALUE: MAX_SCALE_VALUE
   };
 })();

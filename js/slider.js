@@ -22,7 +22,7 @@
     });
   });
 
-  var onMouseClick = function (clickEvt) {
+  var setPinPositionOnClick = function (clickEvt) {
     clickEvt.preventDefault();
 
     var effectLine = clickEvt.currentTarget.querySelector('.effect-level__line');
@@ -32,10 +32,10 @@
 
     window.filter.setValueEffectSlider(pinValue);
 
-    document.removeEventListener('click', onMouseClick);
+    document.removeEventListener('click', setPinPositionOnClick);
   };
 
-  var onMouseDown = function (downEvt) {
+  var setPinPositionPress = function (downEvt) {
     downEvt.preventDefault();
 
     var effectLine = downEvt.currentTarget.querySelector('.effect-level__line');
@@ -43,7 +43,7 @@
 
     var pinValue = window.filter.getPinPercent(downEvt.clientX, effectLineCoords.x, effectLineCoords.width);
 
-    var onMouseMove = function (moveEvt) {
+    var setPinPositionOnMove = function (moveEvt) {
       moveEvt.preventDefault();
 
       pinValue = window.filter.getPinPercent(moveEvt.clientX, effectLineCoords.x, effectLineCoords.width);
@@ -51,17 +51,21 @@
       window.filter.setValueEffectSlider(pinValue);
     };
 
-    var onMouseUp = function (upEvt) {
+    var setPinPositionRelease = function (upEvt) {
       upEvt.preventDefault();
 
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mousemove', setPinPositionOnMove);
+      document.removeEventListener('mouseup', setPinPositionRelease);
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mousemove', setPinPositionOnMove);
+    document.addEventListener('mouseup', setPinPositionRelease);
   };
 
-  slider.addEventListener('mousedown', onMouseDown);
-  slider.addEventListener('click', onMouseClick);
+  slider.addEventListener('mousedown', setPinPositionPress);
+  slider.addEventListener('click', setPinPositionOnClick);
+
+  window.slider = {
+    FILTER_DEFAULT_VALUE: FILTER_DEFAULT_VALUE
+  };
 })();
