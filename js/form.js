@@ -1,6 +1,8 @@
 'use strict';
 
 (function () {
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+
   var uploadPhoto = document.querySelector('.img-upload');
   var uploadPhotoControl = uploadPhoto.querySelector('#upload-file');
   var uploadPhotoForm = uploadPhoto.querySelector('.img-upload__overlay');
@@ -10,8 +12,28 @@
     window.util.isEscEvent(evt, closePhotoForm);
   };
 
+  var setCustomPhotoPreview = function () {
+    var file = uploadPhotoControl.files[0];
+    var fileName = file.name.toLowerCase();
+
+    var matches = FILE_TYPES.some(function (it) {
+      return fileName.endsWith(it);
+    });
+
+    if (matches) {
+      var reader = new FileReader();
+
+      reader.addEventListener('load', function () {
+        window.scale.imgUploadPhotoPreview.src = reader.result;
+      });
+
+      reader.readAsDataURL(file);
+    }
+  };
+
   var openPhotoForm = function () {
     uploadPhotoForm.classList.remove('hidden');
+    setCustomPhotoPreview();
     document.addEventListener('keydown', onPopupEscPress);
   };
 
