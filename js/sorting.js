@@ -55,22 +55,31 @@
 
   filterPopular.addEventListener('click', function () {
     activeButton(filterPopular);
-    cleanPage();
-    sortByPopular();
-    window.gallery.addHandlerToAllPhotos();
+    var getSortPopular = function () {
+      cleanPage();
+      sortByPopular();
+      window.gallery.addHandlerToAllPhotos();
+    };
+    window.debounce(getSortPopular);
   });
 
   filterNew.addEventListener('click', function () {
     activeButton(filterNew);
-    cleanPage();
-    sortByNew(window.gallery.arrayOfObject, window.gallery.arrayOfObject.length);
-    window.gallery.addHandlerToAllPhotos();
+    var getSortNew = function () {
+      cleanPage();
+      sortByNew(window.gallery.arrayOfObject, window.gallery.arrayOfObject.length);
+      window.gallery.addHandlerToAllPhotos();
+    };
+    window.debounce(getSortNew);
   });
 
   filterDiscussed.addEventListener('click', function () {
     activeButton(filterDiscussed);
-    cleanPage();
-    sortByDiscussed(window.gallery.arrayOfObject);
-    window.gallery.addHandlerToAllPhotos();
+    var getSortDiscussed = function () {
+      cleanPage();
+      sortByDiscussed(window.gallery.arrayOfObject);
+      window.gallery.addHandlerToAllPhotos();
+    };
+    window.debounce(getSortDiscussed);
   });
 })();
