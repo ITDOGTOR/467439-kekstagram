@@ -22,55 +22,55 @@
     });
   };
 
+  var sortByPopular = function () {
+    window.gallery.fillPagePhotos(window.gallery.arrayOfObject);
+  };
+
   var sortByNew = function (data, quantity) {
     var dataCopy = data.slice();
     var newArray = [];
-    var index;
+    var pictureIndex;
     for (var i = 0; i < 10; i++) {
-      index = window.util.getRandomNumber(0, quantity);
-      newArray.push(dataCopy[index]);
-      dataCopy.splice(index, 1);
+      pictureIndex = window.util.getRandomNumber(0, quantity);
+      newArray.push(dataCopy[pictureIndex]);
+      dataCopy.splice(pictureIndex, 1);
       quantity--;
     }
-    window.gallery.fillPagePhotos(newArray, 10);
+    window.gallery.fillPagePhotos(newArray);
   };
 
   var sortByDiscussed = function (data) {
     var dataCopy = data.slice();
     dataCopy.sort(function (first, second) {
-      if (first.comments.length < second.comments.length) {
-        return 1;
-      } else if (first.comments.length > second.comments.length) {
+      if (first.comments.length > second.comments.length) {
         return -1;
-      } else if (first.likes < second.likes) {
+      } else if (first.comments.length < second.comments.length) {
         return 1;
-      } if (first.likes > second.likes) {
-        return -1;
       } else {
         return 0;
       }
     });
-    window.gallery.fillPagePhotos(dataCopy, window.arrayOfObject.length);
+    window.gallery.fillPagePhotos(dataCopy);
   };
 
   filterPopular.addEventListener('click', function () {
     activeButton(filterPopular);
     cleanPage();
-    window.gallery.fillPagePhotos(window.arrayOfObject, window.arrayOfObject.length);
+    sortByPopular();
     window.gallery.addHandlerToAllPhotos();
   });
 
   filterNew.addEventListener('click', function () {
     activeButton(filterNew);
     cleanPage();
-    sortByNew(window.arrayOfObject, window.arrayOfObject.length);
+    sortByNew(window.gallery.arrayOfObject, window.gallery.arrayOfObject.length);
     window.gallery.addHandlerToAllPhotos();
   });
 
   filterDiscussed.addEventListener('click', function () {
     activeButton(filterDiscussed);
     cleanPage();
-    sortByDiscussed(window.arrayOfObject);
+    sortByDiscussed(window.gallery.arrayOfObject);
     window.gallery.addHandlerToAllPhotos();
   });
 })();

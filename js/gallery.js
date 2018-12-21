@@ -106,8 +106,8 @@
 
     userPhotoClose.addEventListener('click', closeUserPhoto);
 
-    window.arrayOfObject = arrayOfObject;
     window.gallery = {
+      arrayOfObject: arrayOfObject,
       addHandlerToAllPhotos: addHandlerToAllPhotos,
       fillPagePhotos: fillPagePhotos
     };
